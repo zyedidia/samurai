@@ -374,6 +374,42 @@ targetsdepth(struct node *n, size_t depth, size_t indent)
 	}
 }
 
+static int
+toknit(int argc, char *argv[])
+{
+	(void)argc;
+	(void)argv;
+
+	struct edge *e;
+	size_t i, j;
+
+	printf("return b{\n");
+	printf("rule([==[\n");
+	for (e = alledges; e; e = e->allnext) {
+		for (i = 0; i < e->nout; ++i) {
+			printf("%s:", e->out[i]->path->s);
+			if (strcmp(e->rule->name, "phony") == 0)
+				printf("V:");
+			printf(" ");
+			for (j = 0; j < e->nin; ++j) {
+				printf("%s ", e->in[j]->path->s);
+			}
+			puts("");
+			struct string *command = edgevar(e, "command", true);
+			if (command && command->n) {
+				printf("    %s\n", command->s);
+			}
+		}
+	}
+	printf("]==])\n");
+	printf("}\n");
+
+	if (fflush(stdout) || ferror(stdout))
+		fatal("write failed");
+
+	return 0;
+}
+
 static void
 targetsusage(void)
 {
@@ -442,6 +478,7 @@ static const struct tool tools[] = {
 	{"graph", graph},
 	{"query", query},
 	{"targets", targets},
+	{"toknit", toknit},
 };
 
 const struct tool *
