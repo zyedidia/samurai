@@ -392,7 +392,11 @@ toknit(int argc, char *argv[])
 				printf("V:");
 			printf(" ");
 			for (j = 0; j < e->nin; ++j) {
-				printf("%s ", e->in[j]->path->s);
+				printf("%s", e->in[j]->path->s);
+				if (j >= e->inorderidx) {
+					printf("[order]");
+				}
+				printf(" ");
 			}
 			puts("");
 			struct string *command = edgevar(e, "command", true);
